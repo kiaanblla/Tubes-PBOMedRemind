@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "c:\Users\User\Documents\GitHub\medRemind\pemantau.py", line 77, in <module>
-    jalankan()
-    ~~~~~~~~^^
-  File "c:\Users\User\Documents\GitHub\medRemind\pemantau.py", line 37, in jalankan
-    from popup import munculkanPopup
-ImportError: cannot import name 'munculkanPopup' from 'popup' (c:\Users\User\Documents\GitHub\medRemind\popup.py)
-
