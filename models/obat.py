@@ -81,9 +81,12 @@ class Obat(ABC):
             raise ValueError(f"Stok {self.nama_lengkap()} tidak cukup.")
         self.stok -= self.jumlah_per_minum
 
-    def is_menipis(self):
-        """True jika stok <= batas minimum (FR-07)."""
-        return self.stok <= self.batas_stok_minimum
+    def is_menipis(self, batas=None):
+        """True jika stok <= batas (FR-07). Jika batas tidak diberikan,
+        dipakai batas_stok_minimum milik obat ini."""
+        if batas is None:
+            batas = self.batas_stok_minimum
+        return self.stok <= batas
 
     # ---- abstraksi: wajib di-override subkelas ----
     @abstractmethod
