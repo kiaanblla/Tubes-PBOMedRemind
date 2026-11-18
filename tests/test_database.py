@@ -78,7 +78,7 @@ class TestObat(DasarDatabase):
                          [rutin.id_obat, temp.id_obat])
         self.assertEqual(len(pengguna.obat_aktif(date(2026, 11, 20))), 1)
 
-    def test_ubah_dan_hapus_obat(self):
+    def test_ubah_dan_nonaktifkan_obat(self):
         obat = self.obat_rutin()
         obat.kurangi_stok()
         self.db.ubah_obat(obat)
@@ -86,13 +86,24 @@ class TestObat(DasarDatabase):
         baru = ObatTemporer(obat.id_obat, "Amlodipin", "5 mg", 1, "tablet", 3,
                             date(2026, 11, 1), date(2026, 11, 30))
         self.db.ubah_obat(baru)           # ganti kategori
-        self.assertIsInstance(self.db.ambil_obat(obat.id_obat), ObatTemporer)
-        self.db.hapus_obat(obat.id_obat)
-        self.assertIsNone(self.db.ambil_obat(obat.id_obat))
+        lagi = self.db.ambil_obat(obat.id_obat)
+        self.assertIsInstance(lagi, ObatTemporer)
+        self.assertFalse(lagi.dinonaktifkan)
+
+        lagi.nonaktifkan()
+        self.db.ubah_obat(lagi)
+        nonaktif = self.db.ambil_obat(obat.id_obat)
+        self.assertTrue(nonaktif.dinonaktifkan)
+        self.assertEqual(nonaktif.status_text(date(2026, 11, 12)), "Nonaktif")
+        self.assertEqual(len(self.db.daftar_obat(self.user.id_pengguna)), 1)
+        self.assertEqual(
+            self.db.daftar_obat(self.user.id_pengguna, termasuk_nonaktif=False), [])
+
+        nonaktif.aktifkan()
+        self.db.ubah_obat(nonaktif)
+        self.assertFalse(self.db.ambil_obat(obat.id_obat).dinonaktifkan)
         with self.assertRaises(ValueError):
-            self.db.hapus_obat(obat.id_obat)
-        with self.assertRaises(ValueError):
-            self.db.ubah_obat(baru)
+            self.db.ubah_obat(ObatRutin(999, "X", "1 mg", 1, "tablet", 1))
 
     def test_obat_untuk_pengguna_tidak_ada_ditolak(self):
         with self.assertRaises(ValueError):
@@ -159,15 +170,23 @@ class TestRiwayat(DasarDatabase):
         self.assertEqual(len(sebagian), 1)
         self.assertEqual(RiwayatKonsumsi.hitung_kepatuhan(semua), 67)
 
-    def test_hapus_obat_menghapus_jadwal_dan_riwayat(self):
+    def test_nonaktifkan_obat_riwayat_tetap_ada(self):
         obat = self.obat_rutin()
         jadwal = self.jadwal(obat)
         r = self.db.tambah_riwayat(RiwayatKonsumsi(
             None, jadwal, datetime(2026, 11, 12, 19, 0)))
-        self.db.hapus_obat(obat.id_obat)
-        self.assertIsNone(self.db.ambil_jadwal(jadwal.id_jadwal))
-        self.assertIsNone(self.db.ambil_riwayat(r.id_riwayat))
+        r.tandai_sudah_minum(datetime(2026, 11, 12, 19, 1))
+        self.db.ubah_riwayat(r)
 
+        obat.nonaktifkan()
+        self.db.ubah_obat(obat)
+
+        riwayat = self.db.daftar_riwayat(self.user.id_pengguna)
+        self.assertEqual(len(riwayat), 1)
+        self.assertEqual(riwayat[0].status, StatusKonsumsi.SUDAH_MINUM)
+        self.assertTrue(riwayat[0].jadwal.obat.dinonaktifkan)
+        # obat nonaktif tidak memicu pengingat lagi
+        self.assertFalse(riwayat[0].jadwal.waktu_tiba(datetime(2026, 11, 13, 19, 0)))
 
 class TestPermanen(unittest.TestCase):
     def test_data_tetap_ada_setelah_ditutup(self):             # T-09

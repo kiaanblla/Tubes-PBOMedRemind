@@ -5,8 +5,9 @@ class Obat(ABC):
     """Kelas induk abstrak untuk semua jenis obat."""
 
     def __init__(self, id_obat, nama, kekuatan_dosis, jumlah_per_minum,
-                 satuan, stok, batas_stok_minimum=5):
+                satuan, stok, batas_stok_minimum=5, dinonaktifkan=False):
         self.__id_obat = id_obat
+        self.__dinonaktifkan = bool(dinonaktifkan)
         self.__kekuatan_dosis = kekuatan_dosis
         self.__satuan = satuan
         # lewat setter supaya langsung tervalidasi
@@ -67,6 +68,25 @@ class Obat(ABC):
         if nilai < 0:
             raise ValueError("Batas stok minimum tidak boleh negatif.")
         self.__batas_stok_minimum = nilai
+
+    @property
+    def dinonaktifkan(self):
+        return self.__dinonaktifkan
+
+    def nonaktifkan(self):
+        """Pengganti hapus: obat tidak lagi diingatkan, riwayat tetap ada."""
+        self.__dinonaktifkan = True
+
+    def aktifkan(self):
+        self.__dinonaktifkan = False
+
+    def perlu_diingatkan(self, hari_ini=None):
+        """True jika tidak dinonaktifkan manual DAN masih dalam masa terapi."""
+        return not self.__dinonaktifkan and self.is_aktif(hari_ini)
+
+    def status_text(self, hari_ini=None):
+        """Teks untuk badge Status di tabel Obat."""
+        return "Aktif" if self.perlu_diingatkan(hari_ini) else "Nonaktif"
 
     # ---- perilaku umum (diwariskan) ----
     def nama_lengkap(self):

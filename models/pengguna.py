@@ -91,8 +91,8 @@ class Pengguna:
 
     def obat_aktif(self, hari_ini=None):
         """Polimorfisme: is_aktif() berbeda untuk ObatRutin dan ObatTemporer."""
-        return [o for o in self.__daftar_obat if o.is_aktif(hari_ini)]
-
+        return [o for o in self.__daftar_obat if o.perlu_diingatkan(hari_ini)]
+    
     def obat_menipis(self):
         """Obat dengan stok <= batas global di Pengaturan (UC-07)."""
         batas = self.__pengaturan.batas_stok_menipis

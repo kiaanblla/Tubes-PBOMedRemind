@@ -36,6 +36,22 @@ class TestObat(unittest.TestCase):
         self.assertFalse(temp.is_aktif(date(2026, 11, 15)))
         self.assertEqual(temp.hitung_sisa_hari(date(2026, 11, 12)), 2)
 
+    def test_nonaktifkan_dan_aktifkan(self):
+        rutin = ObatRutin(1, "Iuvox", "50 mg", 1, "tablet", 30)
+        temp = ObatTemporer(2, "Amoksisilin", "500 mg", 2, "kapsul", 21,
+                            date(2026, 11, 8), date(2026, 11, 14))
+        hari = date(2026, 11, 12)
+        self.assertTrue(rutin.perlu_diingatkan(hari))
+        self.assertEqual(rutin.status_text(hari), "Aktif")
+        rutin.nonaktifkan()
+        self.assertTrue(rutin.dinonaktifkan)
+        self.assertTrue(rutin.is_aktif(hari))            # masa terapi tidak berubah
+        self.assertFalse(rutin.perlu_diingatkan(hari))
+        self.assertEqual(rutin.status_text(hari), "Nonaktif")
+        rutin.aktifkan()
+        self.assertTrue(rutin.perlu_diingatkan(hari))
+        # obat temporer yang masa terapinya lewat juga tampil Nonaktif
+        self.assertEqual(temp.status_text(date(2026, 11, 20)), "Nonaktif")
 
 if __name__ == "__main__":
     unittest.main()

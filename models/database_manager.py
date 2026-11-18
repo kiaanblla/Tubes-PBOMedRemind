@@ -49,7 +49,8 @@ class DatabaseManager:
         batas_stok_minimum INTEGER NOT NULL,
         kategori           TEXT NOT NULL CHECK (kategori IN ('RUTIN', 'TEMPORER')),
         tanggal_mulai      TEXT,
-        tanggal_selesai    TEXT
+        tanggal_selesai    TEXT,
+        dinonaktifkan      INTEGER NOT NULL DEFAULT 0
     );
     CREATE TABLE IF NOT EXISTS jadwal (
         id_jadwal   INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -204,12 +205,14 @@ class DatabaseManager:
         umum = (baris["id_obat"], baris["nama_obat"], baris["kekuatan_dosis"],
                 baris["jumlah_per_minum"], baris["satuan"], baris["stok"])
         batas = baris["batas_stok_minimum"]
+        nonaktif = bool(baris["dinonaktifkan"])
         if baris["kategori"] == "TEMPORER":
             return ObatTemporer(*umum,
                                 date.fromisoformat(baris["tanggal_mulai"]),
                                 date.fromisoformat(baris["tanggal_selesai"]),
-                                batas)
-        return ObatRutin(*umum, batas)
+                                batas, nonaktif)
+        return ObatRutin(*umum, batas, nonaktif)
+    
 
     def tambah_obat(self, id_pengguna, obat):
         kategori, mulai, selesai = self.__kolom_kategori(obat)
@@ -217,11 +220,12 @@ class DatabaseManager:
             kursor = self.__tulis(
                 """INSERT INTO obat (id_pengguna, nama_obat, kekuatan_dosis,
                    jumlah_per_minum, satuan, stok, batas_stok_minimum,
-                   kategori, tanggal_mulai, tanggal_selesai)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                   kategori, tanggal_mulai, tanggal_selesai, dinonaktifkan)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (id_pengguna, obat.nama, obat.kekuatan_dosis,
                  obat.jumlah_per_minum, obat.satuan, obat.stok,
-                 obat.batas_stok_minimum, kategori, mulai, selesai))
+                 obat.batas_stok_minimum, kategori, mulai, selesai,
+                 int(obat.dinonaktifkan)))
         except sqlite3.IntegrityError:
             raise ValueError("Pengguna tidak ditemukan.")
         return self.ambil_obat(kursor.lastrowid)
@@ -230,10 +234,11 @@ class DatabaseManager:
         baris = self.__satu("SELECT * FROM obat WHERE id_obat = ?", (id_obat,))
         return None if baris is None else self.__bangun_obat(baris)
 
-    def daftar_obat(self, id_pengguna):
-        baris = self.__semua(
-            "SELECT * FROM obat WHERE id_pengguna = ? ORDER BY id_obat",
-            (id_pengguna,))
+    def daftar_obat(self, id_pengguna, termasuk_nonaktif=True):
+        sql = "SELECT * FROM obat WHERE id_pengguna = ?"
+        if not termasuk_nonaktif:
+            sql += " AND dinonaktifkan = 0"
+        baris = self.__semua(sql + " ORDER BY id_obat", (id_pengguna,))
         return [self.__bangun_obat(b) for b in baris]
 
     def ubah_obat(self, obat):
@@ -244,11 +249,11 @@ class DatabaseManager:
             """UPDATE obat SET nama_obat = ?, kekuatan_dosis = ?,
                jumlah_per_minum = ?, satuan = ?, stok = ?,
                batas_stok_minimum = ?, kategori = ?,
-               tanggal_mulai = ?, tanggal_selesai = ?
+               tanggal_mulai = ?, tanggal_selesai = ?, dinonaktifkan = ?
                WHERE id_obat = ?""",
             (obat.nama, obat.kekuatan_dosis, obat.jumlah_per_minum, obat.satuan,
              obat.stok, obat.batas_stok_minimum, kategori, mulai, selesai,
-             obat.id_obat))
+             int(obat.dinonaktifkan), obat.id_obat))
         self.__pastikan_ada(kursor, "Obat tidak ditemukan.")
 
     def hapus_obat(self, id_obat):

@@ -43,6 +43,11 @@ class TestJadwalPengingat(unittest.TestCase):
         self.assertTrue(jadwal.waktu_tiba(datetime(2026, 11, 12, 13, 0)))
         self.assertFalse(jadwal.waktu_tiba(datetime(2026, 11, 15, 13, 0)))
 
+    def test_obat_dinonaktifkan_tidak_tiba(self):
+        jadwal = buat_jadwal()
+        self.assertTrue(jadwal.waktu_tiba(datetime(2026, 11, 12, 19, 0)))
+        jadwal.obat.nonaktifkan()
+        self.assertFalse(jadwal.waktu_tiba(datetime(2026, 11, 12, 19, 0)))
 
 class TestRiwayatKonsumsi(unittest.TestCase):
     def test_alur_tunda_lalu_sudah_minum(self):                 # T-06

@@ -8,9 +8,9 @@ class ObatTemporer(Obat):
 
     def __init__(self, id_obat, nama, kekuatan_dosis, jumlah_per_minum,
                  satuan, stok, tanggal_mulai, tanggal_selesai,
-                 batas_stok_minimum=5):
+                 batas_stok_minimum=5, dinonaktifkan=False):
         super().__init__(id_obat, nama, kekuatan_dosis, jumlah_per_minum,
-                         satuan, stok, batas_stok_minimum)
+                         satuan, stok, batas_stok_minimum, dinonaktifkan)
         if tanggal_selesai < tanggal_mulai:
             raise ValueError("Tanggal selesai tidak boleh lebih awal "
                              "dari tanggal mulai.")

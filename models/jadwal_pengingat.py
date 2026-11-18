@@ -62,6 +62,6 @@ class JadwalPengingat:
         """
         if not self.__aktif:
             return False
-        if not self.__obat.is_aktif(sekarang.date()):
+        if not self.__obat.perlu_diingatkan(sekarang.date()):
             return False
         return sekarang >= self.waktu_terjadwal_pada(sekarang.date())
