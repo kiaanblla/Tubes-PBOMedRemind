@@ -256,10 +256,6 @@ class DatabaseManager:
              int(obat.dinonaktifkan), obat.id_obat))
         self.__pastikan_ada(kursor, "Obat tidak ditemukan.")
 
-    def hapus_obat(self, id_obat):
-        """Menghapus obat juga menghapus jadwal dan riwayatnya (CASCADE)."""
-        kursor = self.__tulis("DELETE FROM obat WHERE id_obat = ?", (id_obat,))
-        self.__pastikan_ada(kursor, "Obat tidak ditemukan.")
 
     # ================= jadwal =================
     @staticmethod
@@ -374,3 +370,17 @@ class DatabaseManager:
                         for j in self.daftar_jadwal_pengguna(id_pengguna)}
         return [self.__bangun_riwayat(b, jadwal_by_id[b["id_jadwal"]])
                 for b in self.__semua(sql, params)]
+
+    def daftar_riwayat_tertunda(self, id_pengguna):
+        """Riwayat yang belum final (Menunggu atau Ditunda), terlama dulu."""
+        jadwal_by_id = {j.id_jadwal: j
+                        for j in self.daftar_jadwal_pengguna(id_pengguna)}
+        baris = self.__semua(
+            """SELECT r.* FROM riwayat r
+               JOIN jadwal j ON j.id_jadwal = r.id_jadwal
+               JOIN obat o ON o.id_obat = j.id_obat
+               WHERE o.id_pengguna = ? AND r.status IN ('MENUNGGU', 'DITUNDA')
+               ORDER BY r.waktu_terjadwal, r.id_riwayat""",
+            (id_pengguna,))
+        return [self.__bangun_riwayat(b, jadwal_by_id[b["id_jadwal"]])
+                for b in baris]

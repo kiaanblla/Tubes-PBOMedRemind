@@ -96,4 +96,5 @@ class Pengguna:
     def obat_menipis(self):
         """Obat dengan stok <= batas global di Pengaturan (UC-07)."""
         batas = self.__pengaturan.batas_stok_menipis
-        return [o for o in self.__daftar_obat if o.is_menipis(batas)]
+        return [o for o in self.__daftar_obat
+                if not o.dinonaktifkan and o.is_menipis(batas)]

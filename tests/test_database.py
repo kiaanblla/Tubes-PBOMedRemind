@@ -170,6 +170,22 @@ class TestRiwayat(DasarDatabase):
         self.assertEqual(len(sebagian), 1)
         self.assertEqual(RiwayatKonsumsi.hitung_kepatuhan(semua), 67)
 
+    def test_daftar_riwayat_tertunda(self):
+        jadwal = self.jadwal(self.obat_rutin())
+        status = [(10, "minum"), (11, "tunda"), (12, "menunggu")]
+        for hari, s in status:
+            r = self.db.tambah_riwayat(RiwayatKonsumsi(
+                None, jadwal, datetime(2026, 11, hari, 19, 0)))
+            if s == "minum":
+                r.tandai_sudah_minum(datetime(2026, 11, hari, 19, 1))
+            elif s == "tunda":
+                r.tunda(10, datetime(2026, 11, hari, 19, 1))
+            self.db.ubah_riwayat(r)
+        tertunda = self.db.daftar_riwayat_tertunda(self.user.id_pengguna)
+        self.assertEqual([r.waktu_terjadwal.day for r in tertunda], [11, 12])
+        self.assertEqual([r.status for r in tertunda],
+                         [StatusKonsumsi.DITUNDA, StatusKonsumsi.MENUNGGU])
+    
     def test_nonaktifkan_obat_riwayat_tetap_ada(self):
         obat = self.obat_rutin()
         jadwal = self.jadwal(obat)
