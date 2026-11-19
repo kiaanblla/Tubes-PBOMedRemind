@@ -1,0 +1,144 @@
+:root {
+  --biru: #2e5b8e;
+  --biru-tua: #1b2c47;
+  --teks-redup: #4a6384;
+  --garis: #bdd2ee;
+  --sidebar: #d5e5fb;
+  --putih: #ffffff;
+  --galat-bg: #fbdede;
+  --galat-teks: #8a1f1f;
+  --font-judul: Georgia, "Times New Roman", serif;
+  --font-isi: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-isi);
+  color: var(--biru-tua);
+  background: linear-gradient(135deg, #eaf3fe 0%, #c9dcf4 100%);
+  background-attachment: fixed;
+}
+
+h1, h2 { font-family: var(--font-judul); color: var(--biru); margin: 0; }
+
+/* ---------- tombol & input ---------- */
+.tombol {
+  width: 100%;
+  margin-top: 22px;
+  padding: 14px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--biru);
+  color: var(--putih);
+  font: 700 17px var(--font-isi);
+  cursor: pointer;
+}
+.tombol:hover { filter: brightness(1.08); }
+
+label { display: block; margin: 16px 0 6px; font-weight: 600; font-size: 14px; }
+input[type="text"], input[type="password"] {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid #9db9e0;
+  border-radius: 14px;
+  font: 16px var(--font-isi);
+  background: var(--putih);
+}
+input:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 3px solid #7aa5dd;
+  outline-offset: 2px;
+}
+
+.galat {
+  margin: 16px 0 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--galat-bg);
+  color: var(--galat-teks);
+  font-size: 14px;
+}
+
+/* ---------- halaman masuk / daftar ---------- */
+.auth {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 120px;
+  padding: 32px;
+}
+.hero { max-width: 460px; }
+.hero h1 { font-size: 64px; line-height: 1.05; }
+.hero h2 { font-size: 26px; font-weight: 400; margin-top: 8px; }
+.hero p { margin-top: 24px; font-size: 18px; line-height: 1.6; color: var(--teks-redup); }
+
+.kartu-auth {
+  width: 100%;
+  max-width: 460px;
+  padding: 40px;
+  background: var(--putih);
+  border-radius: 28px;
+  box-shadow: 0 12px 40px rgba(46, 91, 142, 0.18);
+}
+.tab {
+  display: flex;
+  padding: 4px;
+  border-radius: 999px;
+  background: #e1ecfa;
+}
+.tab a {
+  flex: 1;
+  padding: 11px 0;
+  text-align: center;
+  border-radius: 999px;
+  color: var(--biru-tua);
+  font-weight: 700;
+  text-decoration: none;
+}
+.tab a.aktif { background: var(--biru); color: var(--putih); }
+
+/* ---------- kerangka aplikasi ---------- */
+.app { display: grid; grid-template-columns: 262px 1fr; min-height: 100vh; }
+.sidebar {
+  background: var(--sidebar);
+  border-right: 1px solid var(--garis);
+}
+.profil { display: flex; align-items: center; gap: 12px; padding: 20px; }
+.avatar {
+  display: grid; place-items: center;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--biru); color: var(--putih);
+  font-weight: 700; font-size: 14px;
+}
+.profil .nama { font-weight: 700; overflow-wrap: anywhere; }
+.sidebar nav a, .menu-keluar {
+  display: block; width: 100%;
+  padding: 16px 20px;
+  border: 0; border-top: 1px solid var(--garis);
+  background: transparent;
+  color: var(--biru-tua);
+  font: 17px var(--font-isi);
+  text-align: left; text-decoration: none; cursor: pointer;
+}
+.sidebar nav a:hover, .menu-keluar:hover { background: rgba(255, 255, 255, 0.5); }
+.sidebar nav a.aktif { background: var(--biru); color: var(--putih); font-weight: 700; }
+.sidebar form { margin: 0; }
+
+.konten { padding: 36px 44px; }
+.judul { font-size: 38px; }
+.tanggal { margin: 4px 0 24px; color: var(--teks-redup); }
+.catatan { color: var(--teks-redup); }
+
+/* ---------- layar sempit ---------- */
+@media (max-width: 860px) {
+  .auth { flex-direction: column; gap: 32px; }
+  .hero h1 { font-size: 46px; }
+  .kartu-auth { padding: 28px; }
+  .app { grid-template-columns: 1fr; }
+  .sidebar { border-right: 0; border-bottom: 1px solid var(--garis); }
+  .konten { padding: 24px 20px; }
+}

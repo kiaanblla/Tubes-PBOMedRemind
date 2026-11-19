@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block judul %}Beranda · MedRemind{% endblock %}
+
+{% block konten %}
+  <h1 class="judul">Halo, {{ pengguna.username }}</h1>
+  <p class="tanggal">{{ hari_ini | tanggal_id }}</p>
+  <p class="catatan">Kartu ringkasan dan jadwal hari ini akan ditampilkan di langkah berikutnya.</p>
+{% endblock %}

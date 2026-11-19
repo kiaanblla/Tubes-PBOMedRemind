@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block kelas_body %}halaman-app{% endblock %}
+
+{% block isi %}
+<div class="app">
+  <aside class="sidebar">
+    <div class="profil">
+      <span class="avatar">{{ pengguna.username | inisial }}</span>
+      <span class="nama">{{ pengguna.username }}</span>
+    </div>
+    <nav>
+      {% for endpoint, label in menu %}
+        <a href="{{ url_for(endpoint) }}"
+           class="{{ 'aktif' if request.endpoint == endpoint }}">{{ label }}</a>
+      {% endfor %}
+      <form method="post" action="{{ url_for('keluar') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="menu-keluar">Keluar</button>
+      </form>
+    </nav>
+  </aside>
+  <main class="konten">
+    {% block konten %}{% endblock %}
+  </main>
+</div>
+{% endblock %}
