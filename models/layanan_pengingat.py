@@ -8,8 +8,7 @@ from models.status_konsumsi import StatusKonsumsi
 # status bernilai None artinya: waktunya sudah lewat dan tidak pernah tercatat
 BarisJadwal = namedtuple("BarisJadwal", "jadwal waktu status")
 RingkasanHariIni = namedtuple(
-    "RingkasanHariIni", "berikutnya sudah_minum total obat_menipis")
-
+    "RingkasanHariIni", "berikutnya sudah_minum total obat_menipis baris")
 
 class LayananPengingat:
     """Logika inti pengingat (pengganti PenjadwalNotifikasi pada versi web).
@@ -165,4 +164,4 @@ class LayananPengingat:
                            and b.waktu > sekarang), None)
         sudah = sum(1 for b in baris if b.status == StatusKonsumsi.SUDAH_MINUM)
         return RingkasanHariIni(berikutnya, sudah, len(baris),
-                                pengguna.obat_menipis())
+                                pengguna.obat_menipis(), baris)

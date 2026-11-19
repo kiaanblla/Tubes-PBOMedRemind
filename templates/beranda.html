@@ -4,5 +4,56 @@
 {% block konten %}
   <h1 class="judul">Halo, {{ pengguna.username }}</h1>
   <p class="tanggal">{{ hari_ini | tanggal_id }}</p>
-  <p class="catatan">Kartu ringkasan dan jadwal hari ini akan ditampilkan di langkah berikutnya.</p>
+
+  <section class="kartu-ringkas" aria-label="Ringkasan hari ini">
+    <article class="kartu">
+      <h3>Berikutnya</h3>
+      {% if ringkasan.berikutnya %}
+        <p class="angka">{{ ringkasan.berikutnya.jadwal.waktu_text() }}</p>
+        <p>{{ ringkasan.berikutnya.jadwal.obat.nama_lengkap() }}</p>
+      {% else %}
+        <p class="angka">–</p>
+        <p>Tidak ada jadwal berikutnya</p>
+      {% endif %}
+    </article>
+
+    <article class="kartu">
+      <h3>Hari ini</h3>
+      <p class="angka">{{ ringkasan.sudah_minum }}/{{ ringkasan.total }}</p>
+      <progress class="progres" max="{{ ringkasan.total if ringkasan.total else 1 }}"
+                value="{{ ringkasan.sudah_minum }}"
+                aria-label="Dosis hari ini yang sudah diminum">{{ persen_selesai }}%</progress>
+
+    {% if pengguna.pengaturan.peringatan_beranda %}
+    <article class="kartu">
+      <h3>Stok</h3>
+      <p class="angka">{{ ringkasan.obat_menipis | length }} obat</p>
+      <p>{{ ringkasan.obat_menipis | ringkas_stok }}</p>
+    </article>
+    {% endif %}
+  </section>
+
+  <h2 class="subjudul">Jadwal Hari Ini</h2>
+  {% if ringkasan.baris %}
+    <div class="tabel-bungkus">
+      <table class="tabel">
+        <caption class="sr-only">Jadwal minum obat hari ini</caption>
+        <thead>
+          <tr><th>Jam</th><th>Obat</th><th>Jumlah</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          {% for b in ringkasan.baris %}
+          <tr>
+            <td>{{ b.jadwal.waktu_text() }}</td>
+            <td>{{ b.jadwal.obat.nama_lengkap() }}</td>
+            <td>{{ b.jadwal.obat.dosis_text() }}</td>
+            <td><span class="lencana {{ b.status | kelas_status }}">{{ b.status | label_status }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="catatan">Belum ada jadwal untuk hari ini.</p>
+  {% endif %}
 {% endblock %}

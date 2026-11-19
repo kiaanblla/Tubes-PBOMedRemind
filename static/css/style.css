@@ -142,3 +142,79 @@ input:focus-visible, button:focus-visible, a:focus-visible {
   .sidebar { border-right: 0; border-bottom: 1px solid var(--garis); }
   .konten { padding: 24px 20px; }
 }
+
+
+/* ---------- beranda ---------- */
+.kartu-ringkas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+.kartu {
+  padding: 22px 24px;
+  background: var(--putih);
+  border-radius: 22px;
+  box-shadow: 0 4px 18px rgba(46, 91, 142, 0.10);
+}
+.kartu h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teks-redup);
+}
+.kartu p { margin: 0; }
+.kartu .angka { margin-bottom: 4px; font-size: 36px; font-weight: 700; }
+.progres {
+  display: block;
+  width: 100%;
+  height: 8px;
+  margin-top: 14px;
+  border: 0;
+  border-radius: 999px;
+  background: #dce8f8;
+  overflow: hidden;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.progres::-webkit-progress-bar { background: #dce8f8; border-radius: 999px; }
+.progres::-webkit-progress-value { background: var(--biru); border-radius: 999px; }
+.progres::-moz-progress-bar { background: var(--biru); border-radius: 999px; }
+
+.subjudul { margin-bottom: 14px; font-size: 26px; }
+
+.tabel-bungkus {
+  overflow-x: auto;
+  border-radius: 20px;
+  background: var(--putih);
+  box-shadow: 0 4px 18px rgba(46, 91, 142, 0.10);
+}
+.tabel { width: 100%; border-collapse: collapse; }
+.tabel th {
+  padding: 14px 18px;
+  background: var(--biru);
+  color: var(--putih);
+  font-size: 15px;
+  text-align: left;
+}
+.tabel td { padding: 16px 18px; border-bottom: 1px solid #e3ecf8; }
+.tabel tbody tr:last-child td { border-bottom: 0; }
+
+.lencana {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.lencana.sudah { background: #dcf1e3; color: #1d6a3a; }
+.lencana.menunggu { background: #dce8f8; color: #2e5b8e; }
+.lencana.ditunda { background: #fdebc1; color: #7a5200; }
+.lencana.terlewat { background: #fbdede; color: #8a1f1f; }
+.lencana.kosong { background: #eceff3; color: #56647a; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
